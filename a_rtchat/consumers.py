@@ -17,13 +17,12 @@ class ChatroomConsumer(WebsocketConsumer):
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
         body = text_data_json["body"]
-        
+
         message = GroupMessage.objects.create(
             group=self.chatroom, author=self.user, body=body
         )
-        context = {
-            "message": message, 
-            "user": self.user
-        }
-        html = render_to_string("a_rtchat/partials/chat_message_p.html", context=context)
+        context = {"message": message, "user": self.user}
+        html = render_to_string(
+            "a_rtchat/partials/chat_message_p.html", context=context
+        )
         self.send(text_data=html)
