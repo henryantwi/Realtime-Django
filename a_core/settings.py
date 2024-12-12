@@ -38,6 +38,22 @@ INSTALLED_APPS = [
     "cloudinary",
 ]
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}
+
+LOGGING_CONFIG = 'logging.config.dictConfig'
+
 SITE_ID = 1
 
 MIDDLEWARE = [
