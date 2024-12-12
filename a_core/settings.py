@@ -1,11 +1,9 @@
 from pathlib import Path
 
 import dj_database_url
-from decouple import Config, Csv
+from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-config = Config()
 
 SECRET_KEY = config("SECRET_KEY")
 
@@ -13,7 +11,9 @@ ENVIRONMENT = config("ENVIRONMENT", default="development")
     
 DEBUG = True if ENVIRONMENT == "development" else False
 
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv())
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
+# if ENVIRONMENT == "production":
+#     ALLOWED_HOSTS = config("ALLOWED_HOSTS").split(",")
 
 CSRF_TRUSTED_ORIGINS = ["https://*"]
 
