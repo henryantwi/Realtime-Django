@@ -1,15 +1,30 @@
 from pathlib import Path
 
+import dj_database_url
+from decouple import config
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-SECRET_KEY = "django-insecure-rj#-z^kx3j+1ay397otg6j8m_8#v^$^$jys6&41vy^&6le)ezc"
+SECRET_KEY = config("SECRET_KEY")
 
-DEBUG = True
+ENVIRONMENT = config("ENVIRONMENT")
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "*"]
+REDIS_URL = config("REDIS_URL")
+
+if ENVIRONMENT == "development":
+    DEBUG = True
+elif ENVIRONMENT == "production":
+    DEBUG = False
+
+
+ALLOWED_HOSTS = config(
+    "ALLOWED_HOSTS", default="", cast=lambda v: [s.strip() for s in v.split(",")]
+)
 
 CSRF_TRUSTED_ORIGINS = ["https://*"]
+
+POSTGRES_LOCALLY = False
 
 
 INSTALLED_APPS = [
@@ -28,6 +43,7 @@ INSTALLED_APPS = [
     "a_home",
     "a_users",
     "a_rtchat",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 SITE_ID = 1
@@ -70,12 +86,26 @@ TEMPLATES = [
 # WSGI_APPLICATION = "a_core.wsgi.application"
 ASGI_APPLICATION = "a_core.asgi.application"
 
-
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
+if ENVIRONMENT == "development" or POSTGRES_LOCALLY is True:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer"
+        }
     }
-}
+else:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [
+                    (
+                        REDIS_URL,
+                    )
+                ],
+            },
+        },
+    }
+
 
 DATABASES = {
     "default": {
@@ -83,6 +113,9 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+if ENVIRONMENT == "production" or POSTGRES_LOCALLY is True:
+    DATABASES["default"] = dj_database_url.parse(config("DATABASE_URL"))
 
 AUTH_PASSWORD_VALIDATORS = [
     {
