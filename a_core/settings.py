@@ -15,7 +15,7 @@ ALLOWED_HOSTS = ['*']
 # if ENVIRONMENT == "production":
 #     ALLOWED_HOSTS = ['realtime-django.onrender.com']
 
-CSRF_TRUSTED_ORIGINS = ["https://*"]
+# CSRF_TRUSTED_ORIGINS = ["https://*"]
 
 
 INSTALLED_APPS = [
