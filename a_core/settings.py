@@ -1,13 +1,19 @@
 from pathlib import Path
 
+import dj_database_url
+from decouple import Config, Csv
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+config = Config()
 
-SECRET_KEY = "django-insecure-rj#-z^kx3j+1ay397otg6j8m_8#v^$^$jys6&41vy^&6le)ezc"
+SECRET_KEY = config("SECRET_KEY")
 
-DEBUG = True
+ENVIRONMENT = config("ENVIRONMENT", default="development")
+    
+DEBUG = True if ENVIRONMENT == "development" else False
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "*"]
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv())
 
 CSRF_TRUSTED_ORIGINS = ["https://*"]
 
@@ -28,12 +34,15 @@ INSTALLED_APPS = [
     "a_home",
     "a_users",
     "a_rtchat",
+    "cloudinary_storage",
+    "cloudinary",
 ]
 
 SITE_ID = 1
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -71,11 +80,21 @@ TEMPLATES = [
 ASGI_APPLICATION = "a_core.asgi.application"
 
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
+if ENVIRONMENT == "development":
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer"
+        }
     }
-}
+else:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [config("REDIS_URL")],
+            },
+        }
+    }
 
 DATABASES = {
     "default": {
@@ -83,6 +102,9 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+if ENVIRONMENT == "production":
+    DATABASES["default"] = dj_database_url.parse(config("DATABASE_URL"))
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -111,9 +133,21 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "media/"
-MEDIA_ROOT = BASE_DIR / "media"
+
+if ENVIRONMENT == "production":
+    DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+else:
+    MEDIA_ROOT = BASE_DIR / "media"
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": config("CLOUD_NAME"),
+    "API_KEY": config("CLOUD_API_KEY"),
+    "API_SECRET": config("CLOUD_API_SECRET"),
+}
+
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
