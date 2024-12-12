@@ -24,7 +24,7 @@ ALLOWED_HOSTS = config(
 
 CSRF_TRUSTED_ORIGINS = ["https://*"]
 
-POSTGRES_LOCALLY = False
+POSTGRES_LOCALLY = True
 
 
 INSTALLED_APPS = [
@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     "a_home",
     "a_users",
     "a_rtchat",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 SITE_ID = 1
@@ -58,6 +57,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 AUTHENTICATION_BACKENDS = [
