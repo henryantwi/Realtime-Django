@@ -12,8 +12,8 @@ ENVIRONMENT = config("ENVIRONMENT", default="development")
 DEBUG = True if ENVIRONMENT == "development" else False
 
 ALLOWED_HOSTS = ['*']
-# if ENVIRONMENT == "production":
-#     ALLOWED_HOSTS = ['realtime-django.onrender.com']
+if ENVIRONMENT == "production":
+    ALLOWED_HOSTS += ['realtime-django.onrender.com']
 
 CSRF_TRUSTED_ORIGINS = ["https://*", "https://realtime-django.onrender.com"]
 
