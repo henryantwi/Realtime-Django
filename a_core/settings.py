@@ -19,7 +19,7 @@ CSRF_TRUSTED_ORIGINS = ["https://*", "https://realtime-django.onrender.com"]
 
 
 INSTALLED_APPS = [
-    "daphne",
+    "daphne", # ASGI Web Server
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
