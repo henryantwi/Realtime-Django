@@ -31,9 +31,11 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "django_htmx",
+    
     "a_home",
     "a_users",
     "a_rtchat",
+    
     "cloudinary_storage",
     "cloudinary",
 ]
